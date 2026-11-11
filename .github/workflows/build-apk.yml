@@ -1,0 +1,44 @@
+
+name: Build Lab Report Studio APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/build-apk.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download project ZIP
+        uses: actions/checkout@v4
+
+      - name: Extract Android project
+        run: |
+          unzip -q Lab_Report_Studio_Android_APK_Builder.zip -d project
+          cd project/Lab_Report_Studio_Android_APK_Builder
+          echo "PROJECT_DIR=$PWD" >> $GITHUB_ENV
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: Build APK
+        run: |
+          cd "$PROJECT_DIR"
+          gradle assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lab-Report-Studio-APK
+          path: project/Lab_Report_Studio_Android_APK_Builder/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 14
