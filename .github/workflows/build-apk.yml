@@ -11,14 +11,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Download project ZIP
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Extract Android project
         run: |
           unzip -q Lab_Report_Studio_Android_APK_Builder.zip -d project
-          cd project/Lab_Report_Studio_Android_APK_Builder
-          echo "PROJECT_DIR=$PWD" >> $GITHUB_ENV
+          ls -la project
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -33,12 +32,12 @@ jobs:
 
       - name: Build APK
         run: |
-          cd "$PROJECT_DIR"
+          cd project
           gradle assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Lab-Report-Studio-APK
-          path: project/Lab_Report_Studio_Android_APK_Builder/app/build/outputs/apk/debug/app-debug.apk
+          path: project/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 14
